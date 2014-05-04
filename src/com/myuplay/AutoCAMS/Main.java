@@ -1,6 +1,9 @@
 package com.myuplay.AutoCAMS;
 
+import java.io.File;
+
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -13,6 +16,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -20,9 +25,14 @@ public class Main extends Application {
 
 	private static Stage consoleWindow;
 	private static final TextArea console = new TextArea();
+	private static File directory = new File(System.getProperty("user.dir"));
+	private static File output = new File(directory.getPath() + "/results.csv");
+	private static Stage window;
 
 	@Override
 	public void start(Stage stage) throws Exception {
+
+		window = stage;
 
 		BorderPane bp = new BorderPane();
 
@@ -40,13 +50,13 @@ public class Main extends Application {
 		openConsole();
 
 		consoleWindow.show();
-		
+
 		stage.setOnCloseRequest(new EventHandler<WindowEvent>(){
 			public void handle(WindowEvent arg0) {
 				consoleWindow.close();
 			}
 		});
-		
+
 		stage.toFront();
 
 	}
@@ -58,7 +68,7 @@ public class Main extends Application {
 		title.setStyle("-fx-background-color: #336699");
 
 		Text t = new Text("AutoCAMS Parser");
-		
+
 		t.setFont(new Font(24));
 
 		title.getChildren().add(t);
@@ -69,40 +79,84 @@ public class Main extends Application {
 
 	private Pane createInputs(){
 
+
+
 		VBox list = new VBox();
 
 		//Create buttons and file intputs.
 
-		HBox in = new HBox();
+		BorderPane in = new BorderPane();
 
 		//Input directory.
-		TextField idir = new TextField();
-		Button open = new Button("Input Dir");
-		//TODO
+		final TextField idir = new TextField();
+		idir.setPrefWidth(300);
+		idir.setText(directory.getPath());
+		Button infile = new Button("Input Dir");
+		infile.setPrefWidth(100);
+		infile.setOnAction(new EventHandler<ActionEvent>(){
+			public void handle(ActionEvent arg0) {
+				DirectoryChooser dc = new DirectoryChooser();
+				dc.setInitialDirectory(directory);
+				dc.setTitle("Input directory");
+				File tmp = dc.showDialog(window);
+				if (tmp != null){
+					directory = tmp;
+					idir.setText(directory.getPath());
+					Console.log("New input directory: " + directory.getPath());
+				} else {
+					Console.log("No new directory chosen");
+				}
+			}
+		});
 
-		in.getChildren().addAll(idir, open);
+		in.setCenter(idir);
+		in.setRight(infile);
 
 		//Output entry.
-		HBox out = new HBox();
+		BorderPane out = new BorderPane();
 
 		TextField ofile = new TextField();
+		ofile.setPrefWidth(300);
+		ofile.setText(output.getPath());
 		Button outfile = new Button("Output file");
-		//TODO
+		outfile.setPrefWidth(100);
+		outfile.setOnAction(new EventHandler<ActionEvent>(){
 
-		out.getChildren().addAll(ofile, outfile);
+			public void handle(ActionEvent arg0) {
+				FileChooser out = new FileChooser();
+				out.setInitialDirectory(directory);
+				out.setInitialFileName("results.csv");
+				out.setTitle("Output file");
+				File tmp = out.showSaveDialog(window);
+				if (tmp != null){
+					output = tmp;
+					Console.log("New output file: " + output.getName());
+				} else {
+					Console.log("No new output chosen");
+				}
+			}
 
-		//Run button
-		HBox commands = new HBox();
+		});
+
+		out.setCenter(ofile);
+		out.setRight(outfile);
+
 
 		Button run = new Button("Run");
-		//TODO
+		run.setOnAction(new EventHandler<ActionEvent>(){
 
-		commands.getChildren().add(run);
+			public void handle(ActionEvent arg0) {
+				if (directory.isDirectory() && output.isFile()){
 
+				} else {
+					Console.warn("Invalid input/output settings. Please reselect your input and output.");
+				}
+			}
 
+		});
 
 		//Add elements.
-		list.getChildren().addAll(in, out, commands);
+		list.getChildren().addAll(in, out, run);
 
 		return list;
 

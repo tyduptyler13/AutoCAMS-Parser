@@ -27,6 +27,10 @@ public class Console {
 		print("Debug", args);
 	}
 
+	public static void warn(String...args){
+		print("WARN", args);
+	}
+
 	private static synchronized void print(String channel, String[] args){
 		for (String arg : args){
 

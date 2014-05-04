@@ -13,7 +13,7 @@ public class AutoCAMSData extends Parser implements CSV {
 	private short version;
 
 	private List<AutoCAMSBlockData> blocks = new ArrayList<AutoCAMSBlockData>();
-	
+
 	public AutoCAMSData(short participant, String condition, short version, short block){
 
 		this.participant = participant;
@@ -24,16 +24,29 @@ public class AutoCAMSData extends Parser implements CSV {
 	}
 
 	public String print() {
+
 		String out = "";
-		
-		
-		
-		return null;
+
+		String prelude = participant + "," + block + "," + condition + version;
+
+		for (AutoCAMSBlockData block : blocks){
+
+			out += prelude + "," + block.print();
+
+		}
+
+		return out;
+
 	}
 
 	@Override
 	public void injestLine(String[] parts) {
-		// TODO Auto-generated method stub
+
+		AutoCAMSBlockData block = new AutoCAMSBlockData();
+
+		block.injestLine(parts);
+
+		blocks.add(block);
 
 	}
 
