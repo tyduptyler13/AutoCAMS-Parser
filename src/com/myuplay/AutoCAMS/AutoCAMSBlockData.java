@@ -17,6 +17,16 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 	private short mgmt = 0; //Management
 	private short cmgmt = 0; //Correct management
 
+	private short out = 0; //Pressure out of range.
+	private short nout = 0; //Invalid pressure out of range.
+
+	private short co2 = 0; //Logged c02
+	private short mco2 = 0; //missed c02
+
+	private short con = 0; //Total connections
+	private short lcon = 0; //Logged connections
+	private short mcon = 0; //Missed connections
+
 	//Hidden and not reported data.
 	private short start = -1;
 
@@ -28,12 +38,15 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 
 	public String printData() {
 		return failure + "," + time + "," + diag + "," + cdiag + "," + rep + "," + crep + ","
-				+ firstr + "," + tcr + "," + mgmt + "," + cmgmt;
+				+ firstr + "," + tcr + "," + mgmt + "," + cmgmt + "," + out + "," + nout + ","
+				+ co2 + "," + mco2 + "," + con + "," + lcon + "," + mcon;
 	}
 
 	public static String printHeader() {
 		return "failure,block length,# diag,#correct diag,#repairs,#correct repairs" + 
-				",RT first repair, RT correct repair,#management clicks,#correct management";
+				",RT first repair, RT correct repair,#management clicks,#correct management" + 
+				",pressure out (sec),irrelevant pressure out (sec),logged co2,missed c02,total connections" +
+				",logged connections,missed connections";
 	}
 
 	@Override
@@ -97,6 +110,14 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 				cmgmt++;
 			}
 
+			if (parts[10].equals("ox_out_of_setpoint")){
+				out++;
+			}
+
+			if (parts[10].equals("pressure_out_of_setpoint")){
+				nout++;
+			}
+
 		} else if (cond.contains("NITROGEN")){ //NITRO FAIL
 
 			//Diagnostics
@@ -120,6 +141,14 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 				cmgmt++;
 			}
 
+			if (parts[10].equals("pressure_out_of_setpoint")){
+				out++;
+			}
+
+			if (parts[10].equals("ox_out_of_setpoint")){
+				nout++;
+			}
+
 		} else if (cond.contains("MIXER")){ //MIX FAIL
 
 			//Diagnosticis
@@ -134,6 +163,42 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 
 			if (parts[10].matches("(ox|ni)_flow: .*|(oxygen|pressure)_manual: .*")){
 				cmgmt++;
+			}
+
+			if (parts[10].matches("(ox|pressure)_out_of_setpoint")){
+				out++;
+			}
+
+		}
+
+		if (parts[9].equals("logging_task")){
+
+			if (parts[10].equals("missed") || parts[10].equals("0")){
+				mco2++;
+			} else {
+				try {
+					float val = Float.parseFloat(parts[10]);
+					if (val > 0){
+						co2++;
+					} else {
+						mco2++;
+					}
+				} catch (NumberFormatException e) {
+					mco2++; //Means there is text.
+					Console.warn("Recieved " + parts[10] + " in column k for logging_task, interpreting as a miss");
+				}
+			}
+
+		}
+
+		if (parts[9].equals("connection_check")){
+
+			if (parts[10].equals("icon_appears")){
+				con++;
+			} else if (parts[10].equals("confirmed")){
+				lcon++;
+			} else if (parts[10].equals("icon_closed")){
+				mcon++;
 			}
 
 		}
