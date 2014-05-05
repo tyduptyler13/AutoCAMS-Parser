@@ -5,6 +5,6 @@ public interface CSV {
 	/*
 	 * Print to CSV
 	 */
-	public String print();
+	public String printData();
 
 }

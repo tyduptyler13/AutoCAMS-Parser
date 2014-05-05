@@ -2,30 +2,135 @@ package com.myuplay.AutoCAMS;
 
 public class AutoCAMSBlockData extends Parser implements CSV{
 
-	public long time = -1; //Time
+	private short time = -1; //Time
 
-	public short clicks = -1; //Clicks
-	public float cpm = -1; //Clicks per minute
+	private short diag = 0; //Diagnosed clicks
+	private short cdiag = 0; //Correct diagnosed clicks.
 
-	public short diagClick = -1; //Diagnosed clicks
-	public float dcpm = -1; //Diagnosed clicks per minute
+	private short rep = 0; //Repairs
+	private short crep = 0; //Correct repairs
+	private short firstr = -1; //First repair.
+	private short tcr = -1; //Time to correct repair
 
-	public short loggedCO2 = -1; //Logged CO2
-	public short confCon = -1; //Confirmed connections
-	public short conChk = -1; //Connection checks
-	public short te2 = -1; //2nd Task errors
-	public short failures = -1;
-	public short nr = -1; //Repairs
-	public short ncr = -1; //Correct repairs
+	private short mgmt = 0; //Management
+	private short cmgmt = 0; //Correct management
 
-	public String print() {
-		// TODO Auto-generated method stub
-		return null;
+	//Hidden and not reported data.
+	private short start = -1;
+
+	private String cond;
+
+	public String printData() {
+		return time + "," + diag + "," + cdiag + "," + rep + "," + crep + "," + firstr + "," + tcr
+				+ "," + mgmt + "," + cmgmt;
+	}
+
+	public static String printHeader() {
+		return "block length,# diag,#correct diag,#repairs,#correct repairs" + 
+				",RT first repair, RT correct repair,#management clicks,#correct management";
 	}
 
 	@Override
 	public void injestLine(String[] parts) {
-		// TODO Auto-generated method stub
+
+		if (start == -1){ //First entry.
+			start = Short.parseShort(parts[0]);
+			cond = parts[10]; //Condition.
+		}
+
+		//Column K = repair
+		if (parts[10].contains("repair")){
+
+			rep++; //Count up repairs.
+
+			//First repair
+			if (firstr == -1){
+				firstr = (short) (Short.parseShort(parts[0]) - start);
+			}
+
+			//Correct repair
+			if (parts[10].contains(cond)){
+				tcr = (short) (Short.parseShort(parts[0]) - start);
+				crep++; // Number of correct repairs.
+			}
+
+		}
+
+		//Column k = end
+		//if (parts[10].equals("phase changed") && parts[11].equals("GREEN")){
+		//Commented out so that it will always equal the last time available
+		time = (short) (Short.parseShort(parts[0]) - start);
+		//}
+
+		//Diagnosis/Management steps
+
+		if (parts[10].matches("(ox|ni)_flow|(oxygen|pressure)_man")){
+			mgmt++;
+		}
+
+		if (cond.contains("OXYGEN")){//Oxygen failure
+
+			//Diagnostics
+			if (parts[9].equals("graphic_monitor")){
+				if (parts[10].matches("(ox|ni)_open")){
+					diag++;
+					cdiag++;
+				}
+			} else if (parts[10].contains("open: ")){
+				if (parts[9].matches("possible_flow|ox_second|ox_tank_display")){
+					diag++;
+					cdiag++;
+				} else if (parts[9].matches("ni_second|ni_tank_display|mixer")){
+					diag++;
+					//Incorrect
+				}
+			}
+
+			//Management
+			if (parts[10].matches("ox_flow|oxygen_man")){
+				cmgmt++;
+			}
+
+		} else if (cond.contains("NITROGEN")){ //NITRO FAIL
+
+			//Diagnostics
+			if (parts[9].equals("graphic_monitor")){
+
+				if (parts[10].matches("(ox|ni)_open")){
+					diag++;
+					cdiag++;
+				}
+			} else if (parts[10].contains("open: ")){
+				if (parts[9].matches("possible_flow|ni_(second|tank_display)")){
+					diag++;
+					cdiag++;
+				} else if (parts[9].matches("ox_(second|tank_display)|mixer")) {
+					diag++;
+					//Incorrect
+				}
+			}
+
+			if (parts[10].matches("ni_flow|pressure_man")){
+				cmgmt++;
+			}
+
+		} else if (cond.contains("MIXER")){ //MIX FAIL
+
+			//Diagnosticis
+			if (parts[9].equals("graphic_monitor") && parts[10].matches("(ni|ox)_open")){
+				diag++;
+				cdiag++;
+			} else if (parts[9].matches("possible_flow|(ox|ni)_(second|tank_display)|mixer") &&
+					parts[10].contains("open: ")){
+				diag++;
+				cdiag++;
+			}
+
+			if (parts[10].matches("(ox|ni)_flow|(oxygen|pressure)_man")){
+				cmgmt++;
+			}
+
+		}
 
 	}
 

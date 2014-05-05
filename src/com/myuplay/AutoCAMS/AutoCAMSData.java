@@ -1,5 +1,6 @@
 package com.myuplay.AutoCAMS;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +12,7 @@ public class AutoCAMSData extends Parser implements CSV {
 	private short block;
 	private String condition;
 	private short version;
+	private boolean inBlock = false;
 
 	private List<AutoCAMSBlockData> blocks = new ArrayList<AutoCAMSBlockData>();
 
@@ -23,15 +25,15 @@ public class AutoCAMSData extends Parser implements CSV {
 
 	}
 
-	public String print() {
+	public String printData() {
 
 		String out = "";
 
-		String prelude = participant + "," + block + "," + condition + version;
+		String prelude = participant + "," + condition + version + "," + block;
 
 		for (AutoCAMSBlockData block : blocks){
 
-			out += prelude + "," + block.print();
+			out += prelude + "," + block.printData() + "\r\n";
 
 		}
 
@@ -39,14 +41,35 @@ public class AutoCAMSData extends Parser implements CSV {
 
 	}
 
+	public static String printHeader() {
+		return "Participant,Condition Version,Block," + AutoCAMSBlockData.printHeader();
+	}
+
 	@Override
-	public void injestLine(String[] parts) {
+	public void injestLine(String[] parts) throws ParseException {
 
-		AutoCAMSBlockData block = new AutoCAMSBlockData();
+		if (parts.length != 14){
+			throw new ParseException("Unexpected number of columns. (Expects 14)", parts.length);
+		}
 
-		block.injestLine(parts);
+		if (inBlock){
+			//Look for end of block
+			if (parts[10].equals("phase changed") && parts[11].equals("GREEN")){
+				inBlock = false;
+				//End of block
+			}
+			//Get last block.
+			blocks.get(blocks.size() - 1).injestLine(parts);
 
-		blocks.add(block);
+		} else {
+			//Looking for beginning of block.
+			if (parts[9].equals("detector")){
+				inBlock = true;
+				AutoCAMSBlockData b = new AutoCAMSBlockData();
+				b.injestLine(parts);
+				blocks.add(b);
+			}
+		}
 
 	}
 

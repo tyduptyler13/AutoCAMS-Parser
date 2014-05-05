@@ -91,6 +91,7 @@ public class Main extends Application {
 		final TextField idir = new TextField();
 		idir.setPrefWidth(300);
 		idir.setText(directory.getPath());
+		idir.setEditable(false);
 		Button infile = new Button("Input Dir");
 		infile.setPrefWidth(100);
 		infile.setOnAction(new EventHandler<ActionEvent>(){
@@ -115,9 +116,10 @@ public class Main extends Application {
 		//Output entry.
 		BorderPane out = new BorderPane();
 
-		TextField ofile = new TextField();
+		final TextField ofile = new TextField();
 		ofile.setPrefWidth(300);
 		ofile.setText(output.getPath());
+		ofile.setEditable(false);
 		Button outfile = new Button("Output file");
 		outfile.setPrefWidth(100);
 		outfile.setOnAction(new EventHandler<ActionEvent>(){
@@ -130,6 +132,7 @@ public class Main extends Application {
 				File tmp = out.showSaveDialog(window);
 				if (tmp != null){
 					output = tmp;
+					ofile.setText(output.getPath());
 					Console.log("New output file: " + output.getName());
 				} else {
 					Console.log("No new output chosen");
@@ -146,8 +149,10 @@ public class Main extends Application {
 		run.setOnAction(new EventHandler<ActionEvent>(){
 
 			public void handle(ActionEvent arg0) {
-				if (directory.isDirectory() && output.isFile()){
-
+				if (directory.isDirectory() || directory.isFile()){
+					FileReader fr = new FileReader(directory);
+					fr.parse();
+					fr.save(output);
 				} else {
 					Console.warn("Invalid input/output settings. Please reselect your input and output.");
 				}
