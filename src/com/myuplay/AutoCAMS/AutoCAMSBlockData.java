@@ -2,6 +2,8 @@ package com.myuplay.AutoCAMS;
 
 public class AutoCAMSBlockData extends Parser implements CSV{
 
+	private final short failure;
+
 	private short time = -1; //Time
 
 	private short diag = 0; //Diagnosed clicks
@@ -20,13 +22,17 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 
 	private String cond;
 
+	public AutoCAMSBlockData(short failure){
+		this.failure = failure;
+	}
+
 	public String printData() {
-		return time + "," + diag + "," + cdiag + "," + rep + "," + crep + "," + firstr + "," + tcr
-				+ "," + mgmt + "," + cmgmt;
+		return failure + "," + time + "," + diag + "," + cdiag + "," + rep + "," + crep + ","
+				+ firstr + "," + tcr + "," + mgmt + "," + cmgmt;
 	}
 
 	public static String printHeader() {
-		return "block length,# diag,#correct diag,#repairs,#correct repairs" + 
+		return "failure,block length,# diag,#correct diag,#repairs,#correct repairs" + 
 				",RT first repair, RT correct repair,#management clicks,#correct management";
 	}
 
@@ -64,7 +70,7 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 
 		//Diagnosis/Management steps
 
-		if (parts[10].matches("(ox|ni)_flow|(oxygen|pressure)_man")){
+		if (parts[10].matches("(ox|ni)_flow: .*|(oxygen|pressure)_manual: .*")){
 			mgmt++;
 		}
 
@@ -87,7 +93,7 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 			}
 
 			//Management
-			if (parts[10].matches("ox_flow|oxygen_man")){
+			if (parts[10].matches("ox_flow: .*|oxygen_manual: .*")){
 				cmgmt++;
 			}
 
@@ -110,7 +116,7 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 				}
 			}
 
-			if (parts[10].matches("ni_flow|pressure_man")){
+			if (parts[10].matches("ni_flow: .*|pressure_manual: .*")){
 				cmgmt++;
 			}
 
@@ -126,7 +132,7 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 				cdiag++;
 			}
 
-			if (parts[10].matches("(ox|ni)_flow|(oxygen|pressure)_man")){
+			if (parts[10].matches("(ox|ni)_flow: .*|(oxygen|pressure)_manual: .*")){
 				cmgmt++;
 			}
 

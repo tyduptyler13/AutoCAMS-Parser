@@ -14,6 +14,8 @@ public class AutoCAMSData extends Parser implements CSV {
 	private short version;
 	private boolean inBlock = false;
 
+	private short failures = 0;
+
 	private List<AutoCAMSBlockData> blocks = new ArrayList<AutoCAMSBlockData>();
 
 	public AutoCAMSData(short participant, String condition, short version, short block){
@@ -65,7 +67,7 @@ public class AutoCAMSData extends Parser implements CSV {
 			//Looking for beginning of block.
 			if (parts[9].equals("detector")){
 				inBlock = true;
-				AutoCAMSBlockData b = new AutoCAMSBlockData();
+				AutoCAMSBlockData b = new AutoCAMSBlockData(++failures);
 				b.injestLine(parts);
 				blocks.add(b);
 			}
