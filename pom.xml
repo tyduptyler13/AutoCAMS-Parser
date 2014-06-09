@@ -3,15 +3,15 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.myuplay.AutoCAMS</groupId>
 	<artifactId>AutoCAMS</artifactId>
-	<version>1.0.4-SNAPSHOT</version>
+	<version>1.0.5-SNAPSHOT</version>
 	<name>AutoCAMS-Parser</name>
 	<description>Custom parser for AutoCAMS files</description>
-	
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<exec.mainClass>com.myuplay.AutoCAMS.Main</exec.mainClass>
 	</properties>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>joda-time</groupId>
@@ -19,7 +19,7 @@
 			<version>2.3</version>
 		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
@@ -37,6 +37,13 @@
 				<version>2.0</version>
 				<configuration>
 					<mainClass>${exec.mainClass}</mainClass>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<descriptor>bin.xml</descriptor>
 				</configuration>
 			</plugin>
 		</plugins>
