@@ -96,17 +96,17 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 					cdiag++;
 				}
 			} else if (parts[10].contains("open: ")){
-				if (parts[9].matches("possible_flow|ox_second|ox_tank_display")){
+				if (parts[9].matches("possible_flow|ox_(second|tank_display)")){
 					diag++;
 					cdiag++;
-				} else if (parts[9].matches("ni_second|ni_tank_display|mixer")){
+				} else if (parts[9].matches("ni_(second|tank_display)|mixer")){
 					diag++;
 					//Incorrect
 				}
 			}
 
 			//Management
-			if (parts[10].matches("ox_flow: .*|oxygen_manual: .*")){
+			if (parts[10].matches("(ox_flow|oxygen_manual): .*")){
 				cmgmt++;
 			}
 
@@ -137,7 +137,8 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 				}
 			}
 
-			if (parts[10].matches("ni_flow: .*|pressure_manual: .*")){
+			//Managment sections
+			if (parts[10].matches("(ni_flow|pressure_manual): .*")){
 				cmgmt++;
 			}
 
@@ -161,6 +162,7 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 				cdiag++;
 			}
 
+			//Management
 			if (parts[10].matches("(ox|ni)_flow: .*|(oxygen|pressure)_manual: .*")){
 				cmgmt++;
 			}
@@ -171,6 +173,7 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 
 		}
 
+		//Logged co2.
 		if (parts[9].equals("logging_task")){
 
 			if (parts[10].equals("missed") || parts[10].equals("0")){
