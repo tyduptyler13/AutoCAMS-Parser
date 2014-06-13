@@ -83,7 +83,7 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 
 		//Diagnosis/Management steps
 
-		if (parts[10].matches("(ox|ni)_flow: .*|(oxygen|pressure)_manual: .*")){
+		if (parts[10].matches("(ox|ni)_flow:.*|(oxygen|pressure)_manual:.*")){
 			mgmt++;
 		}
 
@@ -94,7 +94,7 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 				if (parts[10].matches("(ox|ni)_open")){
 					cdiag++;
 				}
-			} else if (parts[10].contains("open: ")){
+			} else if (parts[10].contains("open:")){
 				if (parts[9].matches("possible_flow|ox_(second|tank_display)")){
 					cdiag++;
 				} else if (parts[9].matches("ni_(second|tank_display)|mixer")){
@@ -103,7 +103,7 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 			}
 
 			//Management
-			if (parts[10].matches("(ox_flow|oxygen_manual): .*")){
+			if (parts[10].matches("(ox_flow|oxygen_manual):.*")){
 				cmgmt++;
 			}
 
@@ -123,7 +123,7 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 				if (parts[10].matches("(ox|ni)_open")){
 					cdiag++;
 				}
-			} else if (parts[10].contains("open: ")){
+			} else if (parts[10].contains("open:")){
 				if (parts[9].matches("possible_flow|ni_(second|tank_display)")){
 					cdiag++;
 				} else if (parts[9].matches("ox_(second|tank_display)|mixer")) {
@@ -132,7 +132,7 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 			}
 
 			//Managment sections
-			if (parts[10].matches("(ni_flow|pressure_manual): .*")){
+			if (parts[10].matches("(ni_flow|pressure_manual):.*")){
 				cmgmt++;
 			}
 
@@ -150,12 +150,12 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 			if (parts[9].equals("graphic_monitor") && parts[10].matches("(ni|ox)_open")){
 				cdiag++;
 			} else if (parts[9].matches("possible_flow|(ox|ni)_(second|tank_display)|mixer") &&
-					parts[10].contains("open: ")){
+					parts[10].contains("open:")){
 				cdiag++;
 			}
 
 			//Management
-			if (parts[10].matches("(ox|ni)_flow: .*|(oxygen|pressure)_manual: .*")){
+			if (parts[10].matches("(ox|ni)_flow:.*|(oxygen|pressure)_manual:.*")){
 				cmgmt++;
 			}
 
