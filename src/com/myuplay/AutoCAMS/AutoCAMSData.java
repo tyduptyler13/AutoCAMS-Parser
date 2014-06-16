@@ -9,7 +9,7 @@ public class AutoCAMSData extends Parser implements CSV {
 	 * Stores the original csv data.
 	 */
 	private short participant;
-	private short block;
+	private String block;
 	private String condition;
 	private short version;
 	private boolean inBlock = false;
@@ -18,7 +18,7 @@ public class AutoCAMSData extends Parser implements CSV {
 
 	private List<AutoCAMSBlockData> blocks = new ArrayList<AutoCAMSBlockData>();
 
-	public AutoCAMSData(short participant, String condition, short version, short block){
+	public AutoCAMSData(short participant, String condition, short version, String block){
 
 		this.participant = participant;
 		this.condition = condition;

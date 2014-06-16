@@ -71,7 +71,7 @@ public class FileReader {
 					short part = Short.parseShort(tmp[0]);
 					String cond = tmp[1].replaceAll("\\d+", "");
 					short version = Short.parseShort(tmp[1].replaceAll("[a-zA-Z]+", ""));
-					short block = Short.parseShort(tmp[2].replaceAll("[a-zA-Z]+", ""));
+					String block = tmp[2];
 					AutoCAMSData d = new AutoCAMSData(part, cond, version, block);
 
 					//Parse lines
