@@ -38,6 +38,14 @@
 				<configuration>
 					<mainClass>${exec.mainClass}</mainClass>
 				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -45,6 +53,14 @@
 				<configuration>
 					<descriptor>bin.xml</descriptor>
 				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
