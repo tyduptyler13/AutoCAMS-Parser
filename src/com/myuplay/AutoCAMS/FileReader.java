@@ -17,7 +17,6 @@ import javafx.concurrent.Task;
  * @author Tyler
  *
  */
-@SuppressWarnings("restriction")
 public class FileReader extends Task<Boolean>{
 
 	private List<File> files = new ArrayList<File>();

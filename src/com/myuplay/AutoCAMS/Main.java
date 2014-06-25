@@ -22,7 +22,6 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.scene.control.ProgressBar;
 
-@SuppressWarnings("restriction")
 public class Main extends Application {
 
 	private static Stage consoleWindow;
