@@ -58,7 +58,7 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 		}
 
 		//Column K = repair
-		if (parts[10].contains("repair")){
+		if (parts[10].contains("repair:")){
 
 			rep++; //Count up repairs.
 
@@ -115,7 +115,7 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 				nout++;
 			}
 
-		} else if (cond.contains("NITROGEN")){ //NITRO FAIL
+		} else if (cond.contains("NITROGEN") || cond.contains("PRESSURE")){ //NITRO FAIL
 
 			//Diagnostics
 			if (parts[9].equals("graphic_monitor")){
