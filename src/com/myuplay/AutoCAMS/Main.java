@@ -3,6 +3,7 @@ package com.myuplay.AutoCAMS;
 import java.io.File;
 
 import javafx.application.Application;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -158,6 +159,27 @@ public class Main extends Application {
 					FileReader fr = new FileReader(directory, output);
 					prog.progressProperty().bind(fr.progressProperty());
 					status.textProperty().bind(fr.messageProperty());
+					
+					fr.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
+
+						@Override
+						public void handle(WorkerStateEvent arg0) {
+							status.setText("Finished");
+							prog.setProgress(1);
+						}
+						
+					});
+					
+					fr.setOnFailed(new EventHandler<WorkerStateEvent>(){
+
+						@Override
+						public void handle(WorkerStateEvent arg0) {
+							status.setText("Failed. See console");
+							prog.setProgress(0);
+						}
+						
+					});
+					
 					new Thread(fr).start();
 
 				} else {

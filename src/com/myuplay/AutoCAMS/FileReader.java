@@ -118,13 +118,16 @@ public class FileReader extends Task<Boolean>{
 		
 		try {
 			parse();
+			updateProgress(0,1);
 			updateMessage("Saving...");
 			save(output);
+			updateProgress(1,1);
 			updateMessage("Finished");
 			return new Boolean(true);
 		} catch (Exception e){
 			Console.error("An error occurred:", e.getMessage());
 			updateMessage("Failed");
+			failed();
 			return new Boolean(false);
 		}
 		
