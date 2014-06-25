@@ -10,18 +10,25 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.concurrent.Task;
+
 /**
  * Handles a single file.
  * @author Tyler
  *
  */
-public class FileReader {
+@SuppressWarnings("restriction")
+public class FileReader extends Task<Boolean>{
 
 	private List<File> files = new ArrayList<File>();
 	private List<AutoCAMSData> data = new ArrayList<AutoCAMSData>();
 
-	public FileReader(File top){
+	private final File output;
+	
+	public FileReader(File top, File output){
 
+		this.output = output;
+		
 		if (top.isDirectory()){
 			Console.log("Searching " + top.getName() + " for csv files.");
 			getFiles(top);
@@ -55,7 +62,9 @@ public class FileReader {
 
 	public void parse(){
 
-		for (File f : files){
+		for (int i = 0; i < files.size(); ++i){
+			
+			File f = files.get(i);
 
 			if (f.canRead()){
 				try {
@@ -99,8 +108,27 @@ public class FileReader {
 				Console.warn("Can't read: " + f.getPath() + "! Skipping.");
 			}
 
+			updateProgress(i, files.size());
+			updateMessage("Parsing file " + i + "/" + files.size());
+
 		}
 
+	}
+	
+	public Boolean call(){
+		
+		try {
+			parse();
+			updateMessage("Saving...");
+			save(output);
+			updateMessage("Finished");
+			return new Boolean(true);
+		} catch (Exception e){
+			Console.error("An error occurred:", e.getMessage());
+			updateMessage("Failed");
+			return new Boolean(false);
+		}
+		
 	}
 
 	public void save(File out){

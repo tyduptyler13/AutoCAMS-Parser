@@ -20,7 +20,9 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.scene.control.ProgressBar;
 
+@SuppressWarnings("restriction")
 public class Main extends Application {
 
 	private static Stage consoleWindow;
@@ -28,7 +30,9 @@ public class Main extends Application {
 	private static File directory = new File(System.getProperty("user.dir"));
 	private static File output = new File(directory.getPath() + "/results.csv");
 	private static Stage window;
-
+	private static final ProgressBar prog = new ProgressBar();
+	private static final Text status = new Text("Waiting...");
+	
 	@Override
 	public void start(Stage stage) throws Exception {
 
@@ -144,15 +148,19 @@ public class Main extends Application {
 		out.setCenter(ofile);
 		out.setRight(outfile);
 
-
+		HBox bottom = new HBox();
+		
 		Button run = new Button("Run");
 		run.setOnAction(new EventHandler<ActionEvent>(){
 
 			public void handle(ActionEvent arg0) {
 				if (directory.isDirectory() || directory.isFile()){
-					FileReader fr = new FileReader(directory);
-					fr.parse();
-					fr.save(output);
+					
+					FileReader fr = new FileReader(directory, output);
+					prog.progressProperty().bind(fr.progressProperty());
+					status.textProperty().bind(fr.messageProperty());
+					new Thread(fr).start();
+
 				} else {
 					Console.warn("Invalid input/output settings. Please reselect your input and output.");
 				}
@@ -160,8 +168,10 @@ public class Main extends Application {
 
 		});
 
+		bottom.getChildren().addAll(run, prog, status);
+
 		//Add elements.
-		list.getChildren().addAll(in, out, run);
+		list.getChildren().addAll(in, out, bottom);
 
 		return list;
 
