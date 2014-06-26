@@ -3,6 +3,7 @@ package com.myuplay.AutoCAMS;
 import java.io.File;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -23,6 +24,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.scene.control.ProgressBar;
 
+@SuppressWarnings("restriction")
 public class Main extends Application {
 
 	private static Stage consoleWindow;
@@ -32,7 +34,7 @@ public class Main extends Application {
 	private static Stage window;
 	private static final ProgressBar prog = new ProgressBar();
 	private static final Text status = new Text("Waiting...");
-	
+
 	@Override
 	public void start(Stage stage) throws Exception {
 
@@ -149,37 +151,42 @@ public class Main extends Application {
 		out.setRight(outfile);
 
 		HBox bottom = new HBox();
-		
+
 		Button run = new Button("Run");
 		run.setOnAction(new EventHandler<ActionEvent>(){
 
 			public void handle(ActionEvent arg0) {
 				if (directory.isDirectory() || directory.isFile()){
-					
+
 					FileReader fr = new FileReader(directory, output);
 					prog.progressProperty().bind(fr.progressProperty());
 					status.textProperty().bind(fr.messageProperty());
-					
+
 					fr.setOnSucceeded(new EventHandler<WorkerStateEvent>(){
 
 						@Override
 						public void handle(WorkerStateEvent arg0) {
+							status.textProperty().unbind();
 							status.setText("Finished");
+							prog.progressProperty().unbind();
 							prog.setProgress(1);
 						}
-						
+
 					});
-					
+
 					fr.setOnFailed(new EventHandler<WorkerStateEvent>(){
 
 						@Override
-						public void handle(WorkerStateEvent arg0) {
+						public void handle(WorkerStateEvent e) {
+							status.textProperty().unbind();
 							status.setText("Failed. See console");
+							Console.error("Failed to parse:", e.getSource().getException().getMessage());
+							prog.progressProperty().unbind();
 							prog.setProgress(0);
 						}
-						
+
 					});
-					
+
 					new Thread(fr).start();
 
 				} else {
@@ -207,8 +214,19 @@ public class Main extends Application {
 
 	}
 
-	public static void printToConsole(String out){
-		console.appendText(out + "\r\n");
+	public static void printToConsole(final String out){
+		if (Platform.isFxApplicationThread()){
+			console.appendText(out + "\r\n");
+		} else {
+			Platform.runLater(new Runnable(){
+
+				@Override
+				public void run() {
+					console.appendText(out + "\r\n");
+				}
+
+			});
+		}
 	}
 
 	public static void openConsole(){

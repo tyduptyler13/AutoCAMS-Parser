@@ -17,17 +17,18 @@ import javafx.concurrent.Task;
  * @author Tyler
  *
  */
+@SuppressWarnings("restriction")
 public class FileReader extends Task<Boolean>{
 
 	private List<File> files = new ArrayList<File>();
 	private List<AutoCAMSData> data = new ArrayList<AutoCAMSData>();
 
 	private final File output;
-	
+
 	public FileReader(File top, File output){
 
 		this.output = output;
-		
+
 		if (top.isDirectory()){
 			Console.log("Searching " + top.getName() + " for csv files.");
 			getFiles(top);
@@ -62,7 +63,7 @@ public class FileReader extends Task<Boolean>{
 	public void parse(){
 
 		for (int i = 0; i < files.size(); ++i){
-			
+
 			File f = files.get(i);
 
 			if (f.canRead()){
@@ -74,6 +75,11 @@ public class FileReader extends Task<Boolean>{
 					String name = f.getName();
 					name = name.replace(".csv", "");
 					String[] tmp = name.split("-");
+
+					if (tmp.length < 3){
+						Console.warn("Skipping file that does not match the correct filename format. (" + f.getName() + ")");
+						continue;
+					}
 
 					//Parse name.
 					short part = Short.parseShort(tmp[0]);
@@ -113,9 +119,9 @@ public class FileReader extends Task<Boolean>{
 		}
 
 	}
-	
+
 	public Boolean call(){
-		
+
 		try {
 			parse();
 			updateProgress(0,1);
@@ -123,6 +129,7 @@ public class FileReader extends Task<Boolean>{
 			save(output);
 			updateProgress(1,1);
 			updateMessage("Finished");
+			done();
 			return new Boolean(true);
 		} catch (Exception e){
 			Console.error("An error occurred:", e.getMessage());
@@ -130,7 +137,7 @@ public class FileReader extends Task<Boolean>{
 			failed();
 			return new Boolean(false);
 		}
-		
+
 	}
 
 	public void save(File out){
