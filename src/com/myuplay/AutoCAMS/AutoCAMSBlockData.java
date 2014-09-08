@@ -23,6 +23,7 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 	private short cmgmt = 0; //Correct management
 
 	private short out = 0; //Pressure out of range.
+	private short outME = 0; //Pressure out Management Error.
 	private short nout = 0; //Invalid pressure out of range.
 
 	private short co2 = 0; //Logged c02
@@ -44,7 +45,7 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 	public String printData() {
 		return failure + "," + time + "," + idiag + "," + cdiag + ","
 				+ gmonOx + "," + gmonNi + "," + pflow + "," + oxsec + "," + oxtank + "," + rep
-				+ "," + crep + "," + firstr + "," + tcr + "," + mgmt + "," + cmgmt + "," + out
+				+ "," + crep + "," + firstr + "," + tcr + "," + mgmt + "," + cmgmt + "," + out + "," + outME
 				+ "," + nout + "," + co2 + "," + mco2 + "," + con + "," + lcon + "," + mcon;
 	}
 
@@ -52,7 +53,7 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 		return "failure,block length,# incorrect diag,#correct diag,#graphic monitor ox,#graphic monitor ni," +
 				"#possible flow,#* second,#* tank display,#repairs,#correct repairs" + 
 				",RT first repair, RT correct repair,#management clicks,#correct management" + 
-				",pressure out (sec),irrelevant pressure out (sec),logged co2,missed c02,total connections" +
+				",pressure out (sec),pressure out Management Error (sec),irrelevant pressure out (sec),logged co2,missed c02,total connections" +
 				",logged connections,missed connections";
 	}
 
@@ -132,6 +133,17 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 
 			if (parts[10].equals("ox_out_of_setpoint")){
 				out++;
+
+				if (cond.contains("STUCK")){
+					if (Float.parseFloat(parts[2]) < 19.6f){
+						outME++;
+					}
+				} else {
+					if (Float.parseFloat(parts[2]) > 20f){
+						outME++;
+					}
+				}
+
 			}
 
 			if (parts[10].equals("pressure_out_of_setpoint")){
@@ -178,6 +190,17 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 
 			if (parts[10].equals("pressure_out_of_setpoint")){
 				out++;
+
+				if (cond.contains("STUCK")){
+					if (Float.parseFloat(parts[2]) < 0.99f){
+						outME++;
+					}
+				} else {
+					if (Float.parseFloat(parts[2]) > 1.025){
+						outME++;
+					}
+				}
+
 			}
 
 			if (parts[10].equals("ox_out_of_setpoint")){
