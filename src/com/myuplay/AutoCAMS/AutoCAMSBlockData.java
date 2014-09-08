@@ -112,9 +112,9 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 				if (parts[9].matches("possible_flow|ox_(second|tank_display)")){
 					cdiag++;
 
-					if (parts[10].startsWith("p")){ //possible_flow
+					if (parts[9].startsWith("p")){ //possible_flow
 						pflow = 1;
-					} else if (parts[10].endsWith("d")){ //ox_second
+					} else if (parts[9].endsWith("d")){ //ox_second
 						oxsec = 1;
 					} else { //tank_display
 						oxtank = 1;
@@ -158,9 +158,9 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 				if (parts[9].matches("possible_flow|ni_(second|tank_display)")){
 					cdiag++;
 
-					if (parts[10].startsWith("p")){ //possible_flow
+					if (parts[9].startsWith("p")){ //possible_flow
 						pflow = 1;
-					} else if (parts[10].endsWith("d")){ //ox_second
+					} else if (parts[9].endsWith("d")){ //ox_second
 						oxsec = 1;
 					} else { //tank_display
 						oxtank = 1;
