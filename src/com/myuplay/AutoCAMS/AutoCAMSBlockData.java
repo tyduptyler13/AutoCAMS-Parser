@@ -14,6 +14,10 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 	private short oxsec = 0;
 	private short oxtank = 0;
 
+	//These are all for tracking up until the first repair.
+	private short idiag2 = 0; //Incorrect diagnosed clicks
+	private short cdiag2 = 0; //Correct diagnosed clicks.
+
 	private short rep = 0; //Repairs
 	private short crep = 0; //Correct repairs
 	private short firstr = -1; //First repair.
@@ -43,14 +47,15 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 	}
 
 	public String printData() {
-		return failure + "," + time + "," + idiag + "," + cdiag + ","
+		return failure + "," + time + "," + idiag + "," + idiag2 + "," + cdiag + "," + cdiag2 + ","
 				+ gmonOx + "," + gmonNi + "," + pflow + "," + oxsec + "," + oxtank + "," + rep
 				+ "," + crep + "," + firstr + "," + tcr + "," + mgmt + "," + cmgmt + "," + out + "," + outME
 				+ "," + nout + "," + co2 + "," + mco2 + "," + con + "," + lcon + "," + mcon;
 	}
 
 	public static String printHeader() {
-		return "failure,block length,# incorrect diag,#correct diag,#graphic monitor ox,#graphic monitor ni," +
+		return "failure,block length,# incorrect diag,# incorrect (until repair),#correct diag,# correct (until repair)," +
+				"#graphic monitor ox,#graphic monitor ni," +
 				"#possible flow,#* second,#* tank display,#repairs,#correct repairs" + 
 				",RT first repair, RT correct repair,#management clicks,#correct management" + 
 				",pressure out (sec),pressure out Management Error (sec),irrelevant pressure out (sec),logged co2,missed c02,total connections" +
@@ -102,6 +107,10 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 				if (parts[10].matches("(ox|ni)_open")){
 					cdiag++;
 
+					if (firstr == -1){
+						cdiag2++;
+					}
+
 					if (parts[10].startsWith("ox")){
 						gmonOx = 1;
 					} else {
@@ -123,6 +132,11 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 
 				} else if (parts[9].matches("ni_(second|tank_display)|mixer")){
 					idiag++;
+
+					if (firstr == -1){
+						idiag2++;
+					}
+
 				}
 			}
 
@@ -158,6 +172,10 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 				if (parts[10].matches("(ox|ni)_open")){
 					cdiag++;
 
+					if (firstr == -1){
+						cdiag2++;
+					}
+
 					if (parts[10].startsWith("ox")){
 						gmonOx = 1;
 					} else {
@@ -180,6 +198,10 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 
 				} else if (parts[9].matches("ox_(second|tank_display)|mixer")) {
 					idiag++;
+
+					if (firstr == -1){
+						idiag2++;
+					}
 				}
 			}
 
