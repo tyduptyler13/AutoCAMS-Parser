@@ -192,11 +192,11 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 				out++;
 
 				if (cond.contains("STUCK")){
-					if (Float.parseFloat(parts[2]) < 0.99f){
+					if (Float.parseFloat(parts[3]) < 0.99f){
 						outME++;
 					}
 				} else {
-					if (Float.parseFloat(parts[2]) > 1.025){
+					if (Float.parseFloat(parts[3]) > 1.025f){
 						outME++;
 					}
 				}
