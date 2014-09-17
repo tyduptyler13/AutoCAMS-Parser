@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.myuplay.AutoCAMS</groupId>
 	<artifactId>AutoCAMS</artifactId>
-	<version>1.4.0-SNAPSHOT</version>
+	<version>1.4.1-SNAPSHOT</version>
 	<name>AutoCAMS-Parser</name>
 	<description>Custom parser for AutoCAMS files</description>
 

@@ -15,8 +15,11 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 	private short oxtank = 0;
 
 	//These are all for tracking up until the first repair.
-	private short idiag2 = 0; //Incorrect diagnosed clicks
-	private short cdiag2 = 0; //Correct diagnosed clicks.
+	private short gmonOx2 = 0;
+	private short gmonNi2 = 0;
+	private short pflow2 = 0;
+	private short oxsec2 = 0;
+	private short oxtank2 = 0;
 
 	private short rep = 0; //Repairs
 	private short crep = 0; //Correct repairs
@@ -47,16 +50,17 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 	}
 
 	public String printData() {
-		return failure + "," + time + "," + idiag + "," + idiag2 + "," + cdiag + "," + cdiag2 + ","
-				+ gmonOx + "," + gmonNi + "," + pflow + "," + oxsec + "," + oxtank + "," + rep
+		return failure + "," + time + "," + idiag + "," + cdiag + ","
+				+ gmonOx + "," + gmonNi + "," + pflow + "," + oxsec + "," + oxtank + "," +
+				gmonOx2 + ","  + gmonNi2 + ","  + pflow2 + ","  + oxsec2 + ","  + oxtank2 + "," + rep
 				+ "," + crep + "," + firstr + "," + tcr + "," + mgmt + "," + cmgmt + "," + out + "," + outME
 				+ "," + nout + "," + co2 + "," + mco2 + "," + con + "," + lcon + "," + mcon;
 	}
 
 	public static String printHeader() {
-		return "failure,block length,# incorrect diag,# incorrect (until repair),#correct diag,# correct (until repair)," +
-				"#graphic monitor ox,#graphic monitor ni," +
-				"#possible flow,#* second,#* tank display,#repairs,#correct repairs" + 
+		return "failure,block length,# incorrect diag,#correct diag,graphic monitor ox,graphic monitor ni," +
+				"possible_flow,*_second,tank_display,graphic monitor ox (r), graphic monitor ni (r), possible_flow (r), *_second (r), tank_display (r)"+
+				"#repairs,#correct repairs" +
 				",RT first repair, RT correct repair,#management clicks,#correct management" + 
 				",pressure out (sec),pressure out Management Error (sec),irrelevant pressure out (sec),logged co2,missed c02,total connections" +
 				",logged connections,missed connections";
@@ -107,14 +111,20 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 				if (parts[10].matches("(ox|ni)_open")){
 					cdiag++;
 
-					if (firstr == -1){
-						cdiag2++;
-					}
-
 					if (parts[10].startsWith("ox")){
 						gmonOx = 1;
+
+						if (firstr == -1){
+							gmonOx2 = 1;
+						}
+
 					} else {
 						gmonNi = 1;
+
+						if (firstr == -1){
+							gmonNi2 = 1;
+						}
+
 					}
 
 				}
@@ -124,19 +134,29 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 
 					if (parts[9].startsWith("p")){ //possible_flow
 						pflow = 1;
+
+						if (firstr == -1){
+							pflow2 = 1;
+						}
+
 					} else if (parts[9].endsWith("d")){ //ox_second
 						oxsec = 1;
+
+						if (firstr == -1){
+							oxsec2 = 1;
+						}
+
 					} else { //tank_display
 						oxtank = 1;
+
+						if (firstr == -1){
+							oxtank2 = 1;
+						}
+
 					}
 
 				} else if (parts[9].matches("ni_(second|tank_display)|mixer")){
 					idiag++;
-
-					if (firstr == -1){
-						idiag2++;
-					}
-
 				}
 			}
 
@@ -172,17 +192,24 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 				if (parts[10].matches("(ox|ni)_open")){
 					cdiag++;
 
-					if (firstr == -1){
-						cdiag2++;
-					}
-
 					if (parts[10].startsWith("ox")){
 						gmonOx = 1;
+
+						if (firstr == -1){
+							gmonOx2 = 1;
+						}
+
 					} else {
 						gmonNi = 1;
+
+						if (firstr == -1){
+							gmonNi2 = 1;
+						}
+
 					}
 
 				}
+
 			} else if (parts[10].contains("open:")){
 
 				if (parts[9].matches("possible_flow|ni_(second|tank_display)")){
@@ -190,18 +217,29 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 
 					if (parts[9].startsWith("p")){ //possible_flow
 						pflow = 1;
+
+						if (firstr == -1){
+							pflow2 = 1;
+						}
+
 					} else if (parts[9].endsWith("d")){ //ox_second
 						oxsec = 1;
+
+						if (firstr == -1){
+							oxsec2 = 1;
+						}
+
 					} else { //tank_display
 						oxtank = 1;
+
+						if (firstr == -1){
+							oxtank2 = 1;
+						}
+
 					}
 
 				} else if (parts[9].matches("ox_(second|tank_display)|mixer")) {
 					idiag++;
-
-					if (firstr == -1){
-						idiag2++;
-					}
 				}
 			}
 
