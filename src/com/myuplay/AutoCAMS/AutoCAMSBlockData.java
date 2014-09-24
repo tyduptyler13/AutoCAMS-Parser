@@ -58,10 +58,10 @@ public class AutoCAMSBlockData extends Parser implements CSV{
 	}
 
 	public static String printHeader() {
-		return "failure,block length,# incorrect diag,#correct diag,graphic monitor ox,graphic monitor ni," +
-				"possible_flow,*_second,tank_display,graphic monitor ox (r), graphic monitor ni (r), possible_flow (r), *_second (r), tank_display (r)"+
-				"#repairs,#correct repairs" +
-				",RT first repair, RT correct repair,#management clicks,#correct management" + 
+		return "failure,block length,# incorrect diag,#correct diag,"
+				+ "graphic monitor ox,graphic monitor ni,possible_flow,*_second,tank_display,"
+				+ "graphic monitor ox (r), graphic monitor ni (r), possible_flow (r), *_second (r),tank_display (r),#repairs,"
+				+ "#correct repairs,RT first repair, RT correct repair,#management clicks,#correct management" + 
 				",pressure out (sec),pressure out Management Error (sec),irrelevant pressure out (sec),logged co2,missed c02,total connections" +
 				",logged connections,missed connections";
 	}
